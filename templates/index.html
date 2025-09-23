@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Library App</title>
+	<meta charset="utf-8"/>
+    	<meta name="viewport" content="width=device-width initial-scale=1"/>
+</head>
+<body>
+    	<header>
+      		<h1 id="title">Library App</h1>
+      		<p>welcome!</p>
+    	</header>
+    	<main id="main">
+		<form action="/request" method="GET">
+  			<label for="author">Author:</label>
+  			<input type="text" id="author" name="author"><br>
+			<input type="submit" value="Submit">
+		</form> 
+      		<ul>{{range .Data}}
+	      		<li>{{.}}</li>
+      		{{end}}
+    		</ul>
+    	</main>	 
+</body>
+</html>

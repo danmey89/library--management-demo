@@ -4,45 +4,60 @@ import (
 	"database/sql"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"strings"
-	"time"
+	"text/template"
 
 	"github.com/go-yaml/yaml"
 	_ "github.com/lib/pq"
 )
 
-type dbParams struct {
-	DbName   string `yaml:"dbName"`
-	Host     string `yaml:"host"`
-	User     string `yaml:"user"`
-	Password string `yaml:"password"`
-	Sslmode  string `yaml:"sslmode"`
+var(
+	db *sql.DB
+	templates = template.Must(template.ParseFiles("templates/index.html"))
+	books []Book
+)
+
+func rootHandler(w http.ResponseWriter, r *http.Request) {
+	books = nil
+	p := Page{
+		Title: "index",
+		Data: books,
+	}
+	if err := templates.ExecuteTemplate(w, "index.html", p); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
-type bookEntry struct {
-	ID			int
-	Title			string
-	Author			string
-	ISBN			string
-	ISBN13			int
-	Publication_date	time.Time
-	Publisher		string
-	Genres			string
+func requestHandler(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	req := "%" + query.Get("author") + "%"
+
+	if err := querryAuthor(req); err != nil {
+		log.Fatal(err)
+	}
+	p := Page{
+		Title: "index",
+		Data: books,
+	}
+	fmt.Println(req)
+	if err := templates.ExecuteTemplate(w, "index.html", p); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 }
 
-type Book struct {
-	Title			string
-	Author			[]string
-	ISBN			string
-	ISBN13			int
-	Publication_date	time.Time
-	Publisher		string
-	Genres			[]string
+func serve() {
+	mux := http.NewServeMux()
 
+	mux.HandleFunc("/", rootHandler)
+	mux.HandleFunc("/request", requestHandler)
+	
+	fmt.Println("Server running at http://localhost:8080")
+	log.Fatal(http.ListenAndServe(":8080", mux))
 }
-
-var db *sql.DB
 
 func connectDB() (error) {
 	var config dbParams
@@ -61,8 +76,6 @@ func connectDB() (error) {
 	if err != nil {
 		return fmt.Errorf("unable to use configuration: %s", err)
 	}
-	//defer db.Close()
-
 	if err := db.Ping(); err != nil {
 		return fmt.Errorf("failed to open db connection: %s", err)
 	}
@@ -70,15 +83,8 @@ func connectDB() (error) {
 
 }
 
-func getBooks(author string) ([]Book, error) {
-	rows, err := db.Query("SELECT * FROM books WHERE author LIKE $1", author)
-	if err != nil {
-		return nil, fmt.Errorf("Query error: %s", err)
-	}
-	defer rows.Close()
-
-	var books []Book
-
+func parseRows(rows *sql.Rows) error {
+	books = nil
 	for rows.Next() {
 		var bookItem bookEntry
 		var authorList []string
@@ -86,7 +92,7 @@ func getBooks(author string) ([]Book, error) {
 
 		if err := rows.Scan(&bookItem.ID, &bookItem.Title, &bookItem.Author, &bookItem.ISBN, &bookItem.ISBN13,
 			&bookItem.Publication_date, &bookItem.Publisher, &bookItem.Genres); err != nil {
-			return nil, fmt.Errorf("Error processing query: %s", err)
+			return fmt.Errorf("Error processing query: %s", err)
 		}
 		authorList = strings.Split(bookItem.Author, "/")
 		genreList = strings.Split(bookItem.Genres, "/")
@@ -95,20 +101,42 @@ func getBooks(author string) ([]Book, error) {
 			bookItem.Publisher, genreList}
 		books = append(books, book)
 	}
-	if err = rows.Err(); err != nil {
-		return nil, err
+	if err := rows.Err(); err != nil {
+		return err
 	}
-	return books, nil
+	return nil
+}
+
+func querryAuthor(author string) (error) {
+	rows, err := db.Query("SELECT * FROM books WHERE lower(author) LIKE lower($1)", author)
+	if err != nil {
+		return fmt.Errorf("Query error: %s", err)
+	}
+	defer rows.Close()
+	parseRows(rows)
+	return nil
+}
+
+func querryTitle(title string) (error) {
+	rows, err := db.Query("SELECT * FROM books WHERE title LIKE $1", title)
+	if err != nil {
+		return fmt.Errorf("Query error: %s", err)
+	}
+	defer rows.Close()
+	parseRows(rows)
+	return nil
 }
 
 func main() {
 	if err := connectDB(); err != nil {
 		log.Fatal(err)
 	}
+	/*
 	name := "%Douglas Adams%"
 	
-	books, err := getBooks(name)
-	if err != nil {
+	if err := querryAuthor(name); err != nil {
 		log.Fatal(err)
 	}
+	*/
+	serve()
 }
