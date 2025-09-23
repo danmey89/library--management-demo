@@ -131,12 +131,5 @@ func main() {
 	if err := connectDB(); err != nil {
 		log.Fatal(err)
 	}
-	/*
-	name := "%Douglas Adams%"
-	
-	if err := querryAuthor(name); err != nil {
-		log.Fatal(err)
-	}
-	*/
 	serve()
 }

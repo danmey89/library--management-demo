@@ -3,17 +3,19 @@
 querry data from DB via web based user interface
 
 [] SQL database 
-    [] select database
-    [] create schema
+    [x] select database
+    [x] create schema
     [] data input
 [] DB connection
     [] add new entry
-    [] querry db
+    [x] querry db
 [] basic ui
-    [] search querry input
-    [] search results output
+    [x] search querry input
+    [x] search results output
+    [] make results readable
+    [] search for title and genre
+    [] enter new entries
 [] web server
-    [] serve html
-    [] handle request
-    [] create response
-    [] send response
+    [x] serve html
+    [x] handle GET request
+    [] handle PUT request
