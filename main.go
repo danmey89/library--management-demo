@@ -32,17 +32,29 @@ func rootHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func requestHandler(w http.ResponseWriter, r *http.Request) {
-	query := r.URL.Query()
-	req := "%" + query.Get("author") + "%"
-
-	if err := querryAuthor(req); err != nil {
-		log.Fatal(err)
+	if err := r.ParseForm(); err != nil {
+		http.Error(w, "Error parsing form data", http.StatusBadRequest)
+		return
 	}
+
+	arguments := ArgumentEvent{
+		Selector1	: r.Form.Get("selector1"),
+		Input1		: "%" + r.Form.Get("input1") + "%",
+		Selector2	: r.Form.Get("selector2"),
+		Input2		: "%" + r.Form.Get("input2") + "%",
+
+	}
+
+	if err := makeQuery(arguments); err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
 	p := Page{
 		Title: "index",
 		Data: books,
 	}
-	fmt.Println(req)
+
 	if err := templates.ExecuteTemplate(w, "index.html", p); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
@@ -107,23 +119,28 @@ func parseRows(rows *sql.Rows) error {
 	return nil
 }
 
-func querryAuthor(author string) (error) {
-	rows, err := db.Query("SELECT * FROM books WHERE lower(author) LIKE lower($1)", author)
-	if err != nil {
-		return fmt.Errorf("Query error: %s", err)
-	}
-	defer rows.Close()
-	parseRows(rows)
-	return nil
-}
+func makeQuery(arguments ArgumentEvent) (error) {
+	
+	if arguments.Selector2 == ""{
+		query := fmt.Sprintf("SELECT * FROM books WHERE lower(%s) LIKE lower($1)", arguments.Selector1)
 
-func querryTitle(title string) (error) {
-	rows, err := db.Query("SELECT * FROM books WHERE title LIKE $1", title)
-	if err != nil {
-		return fmt.Errorf("Query error: %s", err)
+		rows, err := db.Query(query, arguments.Input1)
+		if err != nil {
+			return fmt.Errorf("Query error: %s", err)
+		}
+		defer rows.Close()
+		parseRows(rows)
+	} else if arguments.Selector2 != "" && arguments.Input2 != "" {
+		query := fmt.Sprintf("SELECT * FROM books WHERE lower(%s) LIKE lower($1) AND lower(%s) LIKE lower($2)", arguments.Selector1, arguments.Selector2)
+
+		rows, err := db.Query(query, arguments.Input1, arguments.Input2)
+		if err != nil {
+			return fmt.Errorf("Query error: %s", err)
+		}
+		defer rows.Close()
+		parseRows(rows)
 	}
-	defer rows.Close()
-	parseRows(rows)
+
 	return nil
 }
 

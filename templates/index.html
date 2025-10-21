@@ -12,9 +12,31 @@
     	</header>
     	<main id="main">
 		<form action="/request" method="GET">
-  			<label for="author">Author:</label>
-  			<input type="text" id="author" name="author"><br>
+  			<label for="selector1">Select:</label>
+			
+			<select name="selector1" id="selector1">
+				<option value=""></option>
+				<option value="author">Author</option>
+				<option value="title">Title</option>
+				<option value="publisher">Publisher</option>
+			</select>
+
+			<input type="text" id="input1" name="input1"><br>
+
+
+			<label for="selector2">Select:</label>
+			
+			<select name="selector2" id="selector2">
+				<option value=""></option>
+				<option value="author">Author</option>
+				<option value="title">Title</option>
+				<option value="publisher">Publisher</option>
+			</select>
+
+			<input type="text" id="input2" name="input2"><br>
+
 			<input type="submit" value="Submit">
+
 		</form> 
       		<ul>{{range .Data}}
 	      		<li>{{.}}</li>

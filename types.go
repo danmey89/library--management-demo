@@ -36,3 +36,10 @@ type Page struct {
 	Title string
 	Data []Book
 }
+
+type ArgumentEvent struct {
+	Selector1	string
+	Input1		string
+	Selector2	string
+	Input2		string
+}
