@@ -25,8 +25,8 @@ type Book struct {
 	Title			string
 	Author			[]string
 	ISBN			string
-	ISBN13			int
-	Publication_date	time.Time
+	ISBN13			string	
+	Publication_date	string
 	Publisher		string
 	Genres			[]string
 

@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 	"text/template"
 
@@ -101,6 +102,7 @@ func parseRows(rows *sql.Rows) error {
 		var bookItem bookEntry
 		var authorList []string
 		var genreList []string
+		var year int
 
 		if err := rows.Scan(&bookItem.ID, &bookItem.Title, &bookItem.Author, &bookItem.ISBN, &bookItem.ISBN13,
 			&bookItem.Publication_date, &bookItem.Publisher, &bookItem.Genres); err != nil {
@@ -108,8 +110,9 @@ func parseRows(rows *sql.Rows) error {
 		}
 		authorList = strings.Split(bookItem.Author, "/")
 		genreList = strings.Split(bookItem.Genres, "/")
+		year = bookItem.Publication_date.Year()
 
-		var book = Book {bookItem.Title, authorList,bookItem.ISBN,bookItem.ISBN13,bookItem.Publication_date,
+		var book = Book {bookItem.Title, authorList,bookItem.ISBN,strconv.Itoa(bookItem.ISBN13),strconv.Itoa(year),
 			bookItem.Publisher, genreList}
 		books = append(books, book)
 	}
@@ -121,7 +124,7 @@ func parseRows(rows *sql.Rows) error {
 
 func makeQuery(arguments ArgumentEvent) (error) {
 	
-	if arguments.Selector2 == ""{
+	if arguments.Selector2 == "" && arguments.Selector1 != ""{
 		query := fmt.Sprintf("SELECT * FROM books WHERE lower(%s) LIKE lower($1)", arguments.Selector1)
 
 		rows, err := db.Query(query, arguments.Input1)
@@ -130,6 +133,7 @@ func makeQuery(arguments ArgumentEvent) (error) {
 		}
 		defer rows.Close()
 		parseRows(rows)
+
 	} else if arguments.Selector2 != "" && arguments.Input2 != "" {
 		query := fmt.Sprintf("SELECT * FROM books WHERE lower(%s) LIKE lower($1) AND lower(%s) LIKE lower($2)", arguments.Selector1, arguments.Selector2)
 
