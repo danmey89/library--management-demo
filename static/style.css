@@ -1,0 +1,60 @@
+html {
+	background-color: slategray;
+}
+
+body {
+	max-width: 1500px;
+	display: block;
+	margin: 0 auto;
+}
+
+header {
+    	display: flex;
+	justify-content: center;
+	margin-top: 15px;
+	background-color: cornsilk;
+}
+
+footer {
+	margin-top: 15px;
+	padding: 15px 10px;
+	background-color: cornsilk;
+}
+
+form {
+	margin: 15px 10px;
+}
+
+section {
+	display: flex;
+	width: 100%;
+	height: auto;
+	justify-content: space-between;
+	margin-top: 15px;
+	background-color: cornsilk;
+}
+
+table, td, th {
+	border: 1px solid;
+	border-collapse: collapse;
+}
+td {
+	padding: 3px;
+}
+
+th {
+	padding: 5px;
+}
+
+.title {
+	width: 350px;
+}
+
+.author {
+	width: 200px;
+}
+
+#input1, #input2 {
+	margin: 3px;
+	width: 450px;
+}
