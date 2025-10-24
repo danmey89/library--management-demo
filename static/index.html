@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<title>Library App</title>
+	<meta charset="utf-8"/>
+    	<meta name="viewport" content="width=device-width initial-scale=1"/>
+</head>
+<body>
+    	<header>
+      		<h1 id="title">Library App</h1>
+      		<p>welcome!</p>
+    	</header>
+    	<main id="main">
+		<form action="/request" method="GET">
+  			<label for="selector1">Select:</label>
+			
+			<select name="selector1" id="selector1">
+				<option value=""></option>
+				<option value="author">Author</option>
+				<option value="title">Title</option>
+				<option value="publisher">Publisher</option>
+				<option value="genres">Genre</option>
+			</select>
+
+			<input type="text" id="input1" name="input1"><br>
+
+
+			<label for="selector2">Select:</label>
+			
+			<select name="selector2" id="selector2">
+				<option value=""></option>
+				<option value="author">Author</option>
+				<option value="title">Title</option>
+				<option value="publisher">Publisher</option>
+				<option value="genres">Genre</option>
+			</select>
+
+			<input type="text" id="input2" name="input2"><br>
+
+			<input type="submit" value="Submit">
+
+		</form> 
+    	</main>	 
+</body>
+</html>

@@ -16,49 +16,44 @@ import (
 
 var(
 	db *sql.DB
-	templates = template.Must(template.ParseFiles("templates/index.html"))
-	books []Book
+	templates = template.Must(template.New("response.gohtml").Funcs(funcMap).ParseFiles("templates/response.gohtml"))
+	books []map[string]string
 )
 
 func rootHandler(w http.ResponseWriter, r *http.Request) {
-	books = nil
-	p := Page{
-		Title: "index",
-		Data: books,
-	}
-	if err := templates.ExecuteTemplate(w, "index.html", p); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+
+	p := "." + r.URL.Path
+    	if p == "./" {
+        	p = "./static/index.html"
+    	}
+    	http.ServeFile(w, r, p)
 }
 
-func requestHandler(w http.ResponseWriter, r *http.Request) {
-	if err := r.ParseForm(); err != nil {
-		http.Error(w, "Error parsing form data", http.StatusBadRequest)
-		return
-	}
+func requestHandler(temp *template.Template) http.HandlerFunc{
 
-	arguments := ArgumentEvent{
-		Selector1	: r.Form.Get("selector1"),
-		Input1		: "%" + r.Form.Get("input1") + "%",
-		Selector2	: r.Form.Get("selector2"),
-		Input2		: "%" + r.Form.Get("input2") + "%",
+	return func(w http.ResponseWriter, r *http.Request){
+		if err := r.ParseForm(); err != nil {
+			http.Error(w, "Error parsing form data", http.StatusBadRequest)
+			return
+		}
 
-	}
+		arguments := ArgumentEvent{
+			Selector1	: r.Form.Get("selector1"),
+			Input1		: "%" + r.Form.Get("input1") + "%",
+			Selector2	: r.Form.Get("selector2"),
+			Input2		: "%" + r.Form.Get("input2") + "%",
 
-	if err := makeQuery(arguments); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+		}
 
-	p := Page{
-		Title: "index",
-		Data: books,
-	}
-
-	if err := templates.ExecuteTemplate(w, "index.html", p); err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
+		if err := makeQuery(arguments); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+		
+		if err := temp.Execute(w, books); err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
 	}
 }
 
@@ -66,7 +61,7 @@ func serve() {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/", rootHandler)
-	mux.HandleFunc("/request", requestHandler)
+	mux.HandleFunc("/request", requestHandler(templates))
 	
 	fmt.Println("Server running at http://localhost:8080")
 	log.Fatal(http.ListenAndServe(":8080", mux))
@@ -100,20 +95,20 @@ func parseRows(rows *sql.Rows) error {
 	books = nil
 	for rows.Next() {
 		var bookItem bookEntry
-		var authorList []string
-		var genreList []string
+		var author string
+		var genre string
 		var year int
 
 		if err := rows.Scan(&bookItem.ID, &bookItem.Title, &bookItem.Author, &bookItem.ISBN, &bookItem.ISBN13,
 			&bookItem.Publication_date, &bookItem.Publisher, &bookItem.Genres); err != nil {
 			return fmt.Errorf("Error processing query: %s", err)
 		}
-		authorList = strings.Split(bookItem.Author, "/")
-		genreList = strings.Split(bookItem.Genres, "/")
+		author= strings.ReplaceAll(bookItem.Author, "/", ", ")
+		genre= strings.ReplaceAll(bookItem.Genres, "/", ", ")
 		year = bookItem.Publication_date.Year()
 
-		var book = Book {bookItem.Title, authorList,bookItem.ISBN,strconv.Itoa(bookItem.ISBN13),strconv.Itoa(year),
-			bookItem.Publisher, genreList}
+		book := map[string]string{"title": bookItem.Title,"author": author,"ISBN": bookItem.ISBN,"ISBN13": strconv.Itoa(bookItem.ISBN13),"year": strconv.Itoa(year),
+			"publisher": bookItem.Publisher,"genre": genre}
 		books = append(books, book)
 	}
 	if err := rows.Err(); err != nil {

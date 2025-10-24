@@ -8,7 +8,6 @@
 <body>
     	<header>
       		<h1 id="title">Library App</h1>
-      		<p>welcome!</p>
     	</header>
     	<main id="main">
 		<form action="/request" method="GET">
@@ -40,10 +39,9 @@
 			<input type="submit" value="Submit">
 
 		</form> 
-      		<ul>{{range .Data}}
-	      		<li>{{.}}</li>
-      		{{end}}
-    		</ul>
+		<section id="results">
+			{{ results . }}
+		</section>
     	</main>	 
 </body>
 </html>

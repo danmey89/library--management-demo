@@ -23,18 +23,18 @@ type bookEntry struct {
 
 type Book struct {
 	Title			string
-	Author			[]string
+	Author			string
 	ISBN			string
 	ISBN13			string	
 	Publication_date	string
 	Publisher		string
-	Genres			[]string
+	Genres			string
 
 }
 
 type Page struct {
 	Title string
-	Data []Book
+	Data []map[string]string
 }
 
 type ArgumentEvent struct {
