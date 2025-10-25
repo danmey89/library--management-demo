@@ -1,22 +1,11 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<title>Library App</title>
-	<meta charset="utf-8"/>
-    	<meta name="viewport" content="width=device-width initial-scale=1"/>
-	<link rel="stylesheet" href="/static/style.css"/>
+{{define "title"}}Search{{end}}
 
-</head>
-<body>
-    	<header>
-      		<h1 id="title">Library App</h1>
-      		<p>welcome!</p>
-    	</header>
-    	<main id="main">
-		<section>
+{{define "body"}}
+<main id="main">
+	<section>
 		<form action="/request" method="GET">
-  			<label for="selector1">Select:</label>
-			
+			<label for="selector1">Select:</label>
+
 			<select name="selector1" id="selector1">
 				<option value=""></option>
 				<option value="author">Author</option>
@@ -28,7 +17,7 @@
 			<input type="text" id="input1" name="input1"><br>
 
 			<label for="selector2">Select:</label>
-			
+
 			<select name="selector2" id="selector2">
 				<option value=""></option>
 				<option value="author">Author</option>
@@ -42,10 +31,6 @@
 			<input type="submit" value="Submit">
 
 		</form> 
-		</section>
-    	</main>	 
-	<footer>
-		<p>copyright: Daniel Meyer</p>
-	</footer>
-</body>
-</html>
+	</section>
+</main>	 
+{{end}}

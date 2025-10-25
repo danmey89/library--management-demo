@@ -8,19 +8,17 @@ import (
 var funcMap = template.FuncMap{
 	
 	"results": func(books []map[string]string) template.HTML {
-		var fields = [7]string{
+		var fields = [6]string{
 			"Title",
 			"Author",
-			"ISBN",
 			"ISBN13",
 			"Year",
 			"Publisher",
 			"Genres",
 		}
-		var keys = [7]string{
+		var keys = [6]string{
 			"title",
 			"author",
-			"ISBN",
 			"ISBN13",
 			"year",
 			"publisher",
@@ -28,6 +26,8 @@ var funcMap = template.FuncMap{
 		}
 
 		var content string
+
+		content += fmt.Sprintf(`<h3>%d matches</h3>`, len(books))
 
 		content += `<table class="results"><tr>`
 

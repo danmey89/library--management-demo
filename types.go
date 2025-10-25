@@ -1,7 +1,5 @@
 package main
 
-import "time"
-
 type dbParams struct {
 	DbName   string `yaml:"dbName"`
 	Host     string `yaml:"host"`
@@ -11,26 +9,14 @@ type dbParams struct {
 }
 
 type bookEntry struct {
-	ID			int
-	Title			string
-	Author			string
-	ISBN			string
 	ISBN13			int
-	Publication_date	time.Time
-	Publisher		string
-	Genres			string
-}
-
-type Book struct {
 	Title			string
 	Author			string
-	ISBN			string
-	ISBN13			string	
-	Publication_date	string
+	Publication_year	int
 	Publisher		string
 	Genres			string
-
 }
+
 
 type Page struct {
 	Title string

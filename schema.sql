@@ -1,10 +1,8 @@
 CREATE TABLE IF NOT EXISTS books(
-	id SERIAL PRIMARY KEY NOT NULL,
+	isbn13 BIGINT PRIMARY KEY NOT NULL,
 	title VARCHAR,
 	author VARCHAR,
-	isbn VARCHAR,
-	isbn13 BIGINT,
-	publication_date DATE,
+	publication_year INT,
 	publisher VARCHAR,
 	genres VARCHAR 
 );

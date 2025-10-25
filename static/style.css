@@ -9,7 +9,6 @@ body {
 }
 
 header {
-    	display: flex;
 	justify-content: center;
 	margin-top: 15px;
 	background-color: cornsilk;
@@ -22,11 +21,24 @@ footer {
 }
 
 form {
-	margin: 15px 10px;
+	padding: 15px 10px;
+	display: inline-block;
+}
+
+input {
+	width: 250px;
+	height: 20px;
+	padding: 1px;
+	margin: 3px;
+}
+
+h3 {
+	padding: 15px 10px;
+	margin: 0px;
 }
 
 section {
-	display: flex;
+	display: inline-flexbox;
 	width: 100%;
 	height: auto;
 	justify-content: space-between;
@@ -46,15 +58,34 @@ th {
 	padding: 5px;
 }
 
-.title {
-	width: 350px;
-}
-
 .author {
 	width: 200px;
 }
 
-#input1, #input2 {
-	margin: 3px;
-	width: 450px;
+ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+  background-color: gray;
+  display: flex;
 }
+
+ul li a {
+  display: block;
+  color: white;
+  padding: 14px 16px;
+  text-decoration: none;
+}
+
+ul li a:hover {
+  background-color: lightgray;
+  color: black;
+}
+
+#title {
+	display: block;
+	text-align: center;
+	margin: auto;
+	padding: 10px;
+}
+
